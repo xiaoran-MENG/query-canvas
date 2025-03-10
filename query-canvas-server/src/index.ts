@@ -4,6 +4,7 @@ import express from 'express'
 import cookieSession from 'cookie-session'
 import cors from 'cors';
 import { envConfig } from './configurations/env.config';
+import { queryCanvasDataSource } from './database/config';
 
 async function bootstrap() {
     const app: express.Express = express()
@@ -23,8 +24,11 @@ async function bootstrap() {
     try {
         server.listen(envConfig.PORT, () => console.log(`http://localhost:${envConfig.PORT}`))        
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 }
 
-bootstrap().catch(console.error)
+queryCanvasDataSource.initialize().then(() => {
+    console.log('Connected to PostgreSQL');
+    bootstrap().catch(console.error)
+}).catch(e => console.log('Failed to connect to PostgreSQL', e))
